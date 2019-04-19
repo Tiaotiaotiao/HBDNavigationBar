@@ -48,6 +48,9 @@
 @property (nonatomic, assign) BOOL transitional;
 @property (nonatomic, strong) HBDGestureRecognizerDelegate *gestureRecognizerDelegate;
 
+// 记录push状态
+@property (nonatomic, assign, getter=isPushing) BOOL pushing;
+
 @end
 
 @implementation HBDNavigationController
@@ -82,6 +85,8 @@
     self.delegate = self;
     [self.navigationBar setTranslucent:YES];
     [self.navigationBar setShadowImage:[UINavigationBar appearance].shadowImage];
+    // 默认是隐藏
+    self.isHidesBottomBarWhenPushed = YES;
 }
 
 - (void)viewWillLayoutSubviews {
@@ -111,6 +116,35 @@
     return [super navigationBar:navigationBar shouldPopItem:item];
 }
 
+- (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated
+{
+    if (self.isPushing == YES) return;
+    
+    self.pushing = YES;
+    
+    // 如果设置了图片 则为全局设置返回按钮
+    if (self.backimageStr) {
+        viewController.hidesBottomBarWhenPushed = self.isHidesBottomBarWhenPushed;
+        viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:self.backimageStr] style:UIBarButtonItemStylePlain target:self action:@selector(didClickBackButton)];
+    }
+    
+    [super pushViewController:viewController animated:animated];
+}
+
+- (void)didClickBackButton
+{
+    BOOL shouldPop = YES;
+    if (self.backDelegate && [self.backDelegate respondsToSelector:@selector(navigationShouldPopOnBackButton)]) {
+        shouldPop = [self.backDelegate navigationShouldPopOnBackButton];
+    }
+    
+    if (shouldPop) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self popViewControllerAnimated:YES];
+        });
+    }
+}
+
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
     self.transitional = YES;
     self.navigationBar.titleTextAttributes = viewController.hbd_titleTextAttributes;
@@ -132,6 +166,7 @@
 }
 
 - (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    self.pushing = NO;
     self.transitional = NO;
     if (!animated) {
         [self updateNavigationBarForViewController:viewController];
