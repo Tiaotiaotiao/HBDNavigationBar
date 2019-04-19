@@ -125,8 +125,8 @@
     viewController.hidesBottomBarWhenPushed = self.isHidesBottomBarWhenPushed;
 
     // 如果设置了图片 则为全局设置返回按钮
-    if (self.leftBarButtonItem) {
-        viewController.navigationItem.leftBarButtonItem = self.leftBarButtonItem;
+    if (self.customLeftBarButtonItem) {
+        viewController.navigationItem.leftBarButtonItem = self.customLeftBarButtonItem;
     }
     
     [super pushViewController:viewController animated:animated];
