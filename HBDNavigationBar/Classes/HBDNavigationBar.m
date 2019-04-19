@@ -65,6 +65,8 @@
     self.fakeView.frame = self.fakeView.superview.bounds;
     self.backgroundImageView.frame = self.backgroundImageView.superview.bounds;
     self.shadowImageView.frame = CGRectMake(0, CGRectGetHeight(self.shadowImageView.superview.bounds) - 0.5, CGRectGetWidth(self.shadowImageView.superview.bounds), 0.5);
+    // Tiaotiao：默认是隐藏状态
+    self.shadowImageView.hidden = YES;
 }
 
 - (void)setBarTintColor:(UIColor *)barTintColor {
