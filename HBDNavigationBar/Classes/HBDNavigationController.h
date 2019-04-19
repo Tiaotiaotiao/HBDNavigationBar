@@ -24,7 +24,7 @@
 
 @property (nonatomic, weak) id<TTBackButtonHandleDelegate> backDelegate;
 
-@property (nonatomic, copy) NSString *backimageStr;
+@property (nonatomic, strong) UIBarButtonItem *leftBarButtonItem;
 
 // Push时是否隐藏掉Tabbar 默认YES
 @property (nonatomic, assign) BOOL isHidesBottomBarWhenPushed;
